@@ -2,18 +2,21 @@ import discord
 import os
 import datetime
 import asyncio
+import openai
 
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-
+openai.api_key = "YOUR_API_KEY"
 
 reminders = {}
 
 def gen_resp(message):
-    return message.content.split(" ", 1)[1]
+    prompt = message.content.split(" ", 1)[1]
+    resp = openai.Completion.create(engine = "text-davinci-003", prompt = prompt, max_tokens = 6)
+    return resp.choices[0].text.strip()
 
 def splittime(message):
         try:
@@ -37,7 +40,7 @@ def splittime(message):
                     print(user)
                     await user.send(f"Reminder: {text}")
                     reminders[userid].remove([time, text])
-        await asyncio.sleep(10)
+        await asyncio.sleep(60)
 
 
 @client.event
@@ -99,3 +102,5 @@ async def on_message(message):
             mes = mes+f"{i}) {time} {text}\n"
             i = i + 1
         await message.channel.send(mes, reference = message)
+        
+client.run('YOUR_BOT_API')
