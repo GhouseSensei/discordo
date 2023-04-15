@@ -1,5 +1,6 @@
 import discord
 import os
+import datetime
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -7,9 +8,22 @@ client = discord.Client(intents=intents)
 
 
 
+reminders = {}
+
 def gen_resp(message):
     return message.content.split(" ", 1)[1]
 
+def splittime(message):
+        try:
+            text = message.content.split(" ", 3)
+            text.append("No text set")
+            time = text[1] + " " + text[2]
+            text = text[3]
+            time = datetime.datetime.strptime(time, '%m/%d/%y %H:%M:%S')
+            return time, text
+        except:
+            return None, None
+        
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -29,7 +43,16 @@ async def on_message(message):
         await message.channel.send('Hello!', reference = message)
         
     elif message.content.startswith("$setreminder"):
-        return
+        time, text = splittime(message)
+        if time == None or text == None:
+            message.channel.send("The format is $setreminder MM/DD/YYYY HH:MM:SS reason", reference = message)
+            return
+        userid = message.author.id
+        if(userid not in reminders):
+            reminders[userid] = []
+        reminders[userid].append([time, text])
+        await message.channel.send("reminder set", reference = message)
+
     
     elif message.content.startswith("delreminder"):
         return
