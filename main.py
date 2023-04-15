@@ -27,3 +27,12 @@ async def on_message(message):
             #1062387390716592189
     elif message.content.startswith('$hello'):
         await message.channel.send('Hello!', reference = message)
+        
+    elif message.content.startswith("$setreminder"):
+        return
+    
+    elif message.content.startswith("delreminder"):
+        return
+    
+    elif message.content.startswith("$myreminders"):
+        return
