@@ -1,6 +1,8 @@
 import discord
 import os
 import datetime
+import asyncio
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,9 +26,24 @@ def splittime(message):
         except:
             return None, None
         
+ async def remind_user():
+    while True:
+        print("running")
+        current = datetime.datetime.now()
+        for userid, reminder in reminders.items():
+            for time, text in reminder:
+                if current >=time:
+                    user = await client.fetch_user(userid)
+                    print(user)
+                    await user.send(f"Reminder: {text}")
+                    reminders[userid].remove([time, text])
+        await asyncio.sleep(10)
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await remind_user()
 
 @client.event
 async def on_message(message):
@@ -73,7 +90,7 @@ async def on_message(message):
     
     elif message.content.startswith("$myreminders"):
         userid = message.author.id
-        if(userid not in reminders):
+        if(userid not in reminders or reminders[userid] == []):
             await message.channel.send("You havent set any reminders", reference = message)
             return
         i = 1
