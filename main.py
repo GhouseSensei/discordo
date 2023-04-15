@@ -58,4 +58,13 @@ async def on_message(message):
         return
     
     elif message.content.startswith("$myreminders"):
-        return
+        userid = message.author.id
+        if(userid not in reminders):
+            await message.channel.send("You havent set any reminders", reference = message)
+            return
+        i = 1
+        mes = ""
+        for time, text in reminders[userid]:
+            mes = mes+f"{i}) {time} {text}\n"
+            i = i + 1
+        await message.channel.send(mes, reference = message)
