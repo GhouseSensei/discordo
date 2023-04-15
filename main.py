@@ -54,8 +54,22 @@ async def on_message(message):
         await message.channel.send("reminder set", reference = message)
 
     
-    elif message.content.startswith("delreminder"):
-        return
+    elif message.content.startswith("$delreminder"):
+        userid = message.author.id
+        if(userid not in reminders):
+            await message.channel.send("You havent set any reminders", reference = message)
+            return
+        elif len(message.content.split()) < 2:
+            await message.channel.send("Specify the reminder index, you can check the index in $myreminders", reference = message)
+            return
+        elif (message.content.split()[1].isdigit() != True):
+            await message.channel.send("format: $delreminder index(integer)", reference = message)
+            return
+        elif(int(message.content.split()[1])>=len(reminders[userid]) or int(message.content.split()[1])<=0):
+            await message.channel.send("Reminder doesnt exist", reference = message)
+            return
+        reminders[userid].pop(int(message.content.split()[1])-1)
+        await message.channel.send("Deleted reminder", reference = message)
     
     elif message.content.startswith("$myreminders"):
         userid = message.author.id
