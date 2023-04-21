@@ -55,10 +55,10 @@ async def on_message(message):
     elif message.mentions:
         if len(message.mentions)> 1:
             return
-        elif message.mentions[0].id != 1062387390716592189:
+        elif message.mentions[0].id != client.user.id:
             return
         await message.channel.send(gen_resp(message), reference = message)
-            #1062387390716592189
+        
     elif message.content.startswith('$hello'):
         await message.channel.send('Hello!', reference = message)
         
